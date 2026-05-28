@@ -1,0 +1,155 @@
+{
+  "name": "DATA INGESTION",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Upload Document ",
+        "formDescription": "Upload your PDF or document ",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Upload your file",
+              "fieldType": "file"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        -352,
+        -48
+      ],
+      "id": "11665d2c-5c3d-4e89-8a81-88edcd85f171",
+      "name": "On form submission",
+      "webhookId": "7813cbf9-7cb4-4c92-92c7-5b6b0cff4f7e"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "Upload_your_file",
+        "options": {
+          "keepSource": "binary"
+        }
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -160,
+        -48
+      ],
+      "id": "65c6a300-1b90-4ef3-afaf-6e20b38402ff",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "memoryKey": {
+          "__rl": true,
+          "mode": "list",
+          "value": "vector_store_key"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreInMemory",
+      "typeVersion": 1.3,
+      "position": [
+        16,
+        -48
+      ],
+      "id": "e03ae941-3b5c-4ede-aeab-2a7ed410faac",
+      "name": "Simple Vector Store"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -64,
+        192
+      ],
+      "id": "308f1160-4dca-4b61-96c8-8743de56c323",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "LJRJwEeAyzGYpj1S",
+          "name": "main API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        128,
+        192
+      ],
+      "id": "14d71e73-7146-4961-b283-eeeeeb2f0f6e",
+      "name": "Default Data Loader"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Simple Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Simple Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Simple Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "e8ddfdd7-6140-4c69-b45e-91aa151bf9f4",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4518c64eb9180e460b9626661124584bcc65f7380a92a77be9504db062a6324e"
+  },
+  "id": "hLQevABqwvzp3gq6",
+  "tags": []
+}
